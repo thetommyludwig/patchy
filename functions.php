@@ -7,7 +7,6 @@ $id = $ini_array['client_id'];
 $secret = $ini_array['client_secret'];
 
 $url='https://portal.patchman.co/oauth2/token/';
-//$clienttoken=array("client_id" => JFMdhz9yJCJ1lnIPZ3TVqmMHlCR8hhNqodBsmPEl,"client_secret" => MhdVflUow9a6JYzFBIfHPy7CLiUaJSsNp2itr9OCvMPreR2uJ0shqdTYp1fywFGHwyVPAo9lFXqMr4YdrlsG4Bj8ZW54avahLotbDGqosXiXuBM54A40mM8uUeI2xhnh,"grant_type" => "client_credentials");
 $clienttoken=array("client_id" => $id,"client_secret" => $secret,"grant_type" => "client_credentials");
 
 $ch = curl_init($url);
