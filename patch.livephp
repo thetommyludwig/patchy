@@ -1,0 +1,90 @@
+<?php
+include("/usr/local/cpanel/php/cpanel.php"); 
+//include("gettoken.php");
+//include("getuserid.php");
+//include("getandsetredirect.php");
+//include("submitmalware.php");
+include("functions.php");
+// Connect to cPanel - only do this once.
+$cpanel = new CPANEL(); 
+// Add the header
+print $cpanel->header("Patchman"); 
+?>
+
+<head>
+<link rel='stylesheet' type='text/css' href='./css/patch.css'>
+</head>
+
+<body>
+
+<div class="mainBox">
+<h3>Dashboard</h3>
+<?php
+$homedir = $cpanel->cpanelprint('$homedir');
+$user    = $cpanel->cpanelprint('$user');
+$token = getToken();
+$userID = getUserID($token, $user);
+getandsetRedirect($token, $userID);
+?>
+</div>
+
+<div class="mainBox">
+<h3>Submit malware for Review</h3>
+<p><font size=2>Send malware to be analyzed.</font></p>
+
+<form action="./patch.livephp" method="POST" enctype="multipart/form-data">
+<select id="report_type" name="report_type">
+<option value="M">Malware</option>
+<!-- <option value="B">Blacklist</option> -->
+</select>
+Select the file:
+<select id="lefile" name="file" type="file">
+
+<?php
+$files = scandir($homedir);
+
+foreach ($files as $file)
+{
+$fullpath =  $homedir . '/' . $file . '/';
+
+// ignore dot directories and files
+if ( is_dir($fullpath) && !(strpos($file, '.') === 0) )
+echo "<option value=\"$fullpath\">$file</option>";
+}
+?>
+</select>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function()
+{
+    // bind change event to file select 
+    $("#lefile").change(function()
+    {
+        var dir = $(this).val();
+        var home = "<?php print($homedir); ?>"
+        // don't call list files on a file so check for forward slash
+        if( dir.slice(-1) === '/' ) {
+        $.get("listfiles.php", {"dir":dir, "home":home}, function(response){
+            // show the files
+            $("#lefile").html(response);
+        });
+        }
+    });
+});
+</script>
+
+Enter the type: 
+<input id="type" name="type" type="text" />
+Enter a brief description: 
+<textarea cols="75" id="description" name="description" rows="3"></textarea>
+<input type="submit" id="submit_file" class="input-button" value="Submit" />
+</form>
+</div>
+
+</body>
+
+<?php
+print $cpanel->footer(); // Add the footer.
+$cpanel->end(); // Disconnect from cPanel - only do this once.
+?>
